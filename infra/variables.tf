@@ -16,6 +16,12 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
+variable "instance_profile" {
+  description = "Instance profile con permisos para leer Secrets Manager (en Learner Lab ya existe)"
+  type        = string
+  default     = "LabInstanceProfile"
+}
+
 variable "allowed_cidr" {
   description = "Rango de IPs que puede entrar por SSH y a la API"
   type        = string
@@ -32,4 +38,22 @@ variable "repo_url" {
   description = "Repositorio público que la EC2 clona al arrancar"
   type        = string
   default     = "https://github.com/OsscarVlc/to-do-list-api.git"
+}
+
+variable "db_instance_class" {
+  description = "Tamaño de la instancia RDS"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_name" {
+  description = "Nombre de la base de datos"
+  type        = string
+  default     = "todo"
+}
+
+variable "db_username" {
+  description = "Usuario administrador de la BD"
+  type        = string
+  default     = "todoadmin"
 }

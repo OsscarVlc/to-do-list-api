@@ -1,21 +1,20 @@
 import express, { Request, Response } from "express";
-
-interface Task {
-  id: number;
-  tarea: string;
-}
-
-const tasks: Task[] = [];
-let nextId = 1;
+import { getAllTasks, createTask } from "./tasksRepository";
 
 const app = express();
 app.use(express.json());
 
-app.get("/tasks", (_req: Request, res: Response) => {
-  res.json(tasks);
+app.get("/tasks", async (_req: Request, res: Response) => {
+  try {
+    const tasks = await getAllTasks();
+    res.json(tasks);
+  } catch (error) {
+    console.error("Error al obtener tareas:", error);
+    res.status(500).json({ error: "No se pudieron obtener las tareas" });
+  }
 });
 
-app.post("/tasks", (req: Request, res: Response) => {
+app.post("/tasks", async (req: Request, res: Response) => {
   const { tarea } = req.body ?? {};
 
   if (typeof tarea !== "string" || tarea.trim() === "") {
@@ -23,9 +22,13 @@ app.post("/tasks", (req: Request, res: Response) => {
     return;
   }
 
-  const task: Task = { id: nextId++, tarea: tarea.trim() };
-  tasks.push(task);
-  res.status(201).json(task);
+  try {
+    const task = await createTask(tarea.trim());
+    res.status(201).json(task);
+  } catch (error) {
+    console.error("Error al crear tarea:", error);
+    res.status(500).json({ error: "No se pudo crear la tarea" });
+  }
 });
 
 export default app;

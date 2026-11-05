@@ -3,9 +3,9 @@
 exec > /var/log/user-data.log 2>&1
 set -euxo pipefail
 
-# 1. Dependencias del sistema
+# 1. Dependencias del sistema (postgresql-client para poder revisar la BD con psql)
 apt-get update -y
-apt-get install -y git curl
+apt-get install -y git curl postgresql-client
 
 # 2. Node.js 22
 curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
@@ -28,8 +28,11 @@ After=network.target
 User=ubuntu
 WorkingDirectory=/opt/todo-api
 Environment=PORT=${app_port}
+Environment=DB_SECRET_NAME=${db_secret_name}
+Environment=AWS_REGION=${region}
 ExecStart=/usr/bin/node dist/server.js
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
