@@ -1,12 +1,16 @@
 terraform {
+  cloud {
+    organization = "oscar-vlc-iteso"
+
+    workspaces {
+      name = "to-do-list-api"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -40,15 +44,10 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-### Llave SSH generada por Terraform
-resource "tls_private_key" "ssh" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
+### Key Pair con nuestra llave pública fija (la privada vive en GitHub Secrets)
 resource "aws_key_pair" "todo_key" {
   key_name   = "${var.project_name}-key"
-  public_key = tls_private_key.ssh.public_key_openssh
+  public_key = file("${path.module}/todo-api.pub")
 }
 
 ### Security Group de la EC2: SSH + puerto de la API

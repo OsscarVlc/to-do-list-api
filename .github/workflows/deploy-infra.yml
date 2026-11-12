@@ -1,0 +1,47 @@
+name: Deploy infra
+
+# Solo se dispara a mano desde la pestaña Actions
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: infra
+
+    # Terraform y el provider de AWS leen estas variables de ambiente automáticamente
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Descargar el código del repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform y conectar con HCP Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        run: terraform plan
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve
+
+      - name: Mostrar la IP de la EC2
+        run: |
+          IP=$(terraform output -raw server_public_ip)
+          echo "IP de la EC2: $IP"
+          echo "### EC2 lista" >> $GITHUB_STEP_SUMMARY
+          echo "IP pública: \`$IP\`" >> $GITHUB_STEP_SUMMARY
+          echo "Guárdala en el secret \`EC2_HOST\`" >> $GITHUB_STEP_SUMMARY
