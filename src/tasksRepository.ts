@@ -1,4 +1,4 @@
-import { getPool } from "./db";
+import { query } from "./db";
 
 export interface Task {
   id: number;
@@ -6,16 +6,13 @@ export interface Task {
 }
 
 export async function getAllTasks(): Promise<Task[]> {
-  const result = await getPool().query<Task>(
-    "SELECT id, tarea FROM tasks ORDER BY id"
-  );
-  return result.rows;
+  return query<Task>("SELECT id, tarea FROM tasks ORDER BY id");
 }
 
 export async function createTask(tarea: string): Promise<Task> {
-  const result = await getPool().query<Task>(
+  const rows = await query<Task>(
     "INSERT INTO tasks (tarea) VALUES ($1) RETURNING id, tarea",
     [tarea]
   );
-  return result.rows[0];
+  return rows[0];
 }

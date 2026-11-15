@@ -17,7 +17,7 @@ variable "instance_type" {
 }
 
 variable "instance_profile" {
-  description = "Instance profile con permisos para leer Secrets Manager (en Learner Lab ya existe)"
+  description = "Instance profile con permisos para Secrets Manager y CloudWatch (en Learner Lab ya existe)"
   type        = string
   default     = "LabInstanceProfile"
 }
@@ -56,4 +56,9 @@ variable "db_username" {
   description = "Usuario administrador de la BD"
   type        = string
   default     = "todoadmin"
+}
+
+variable "alert_email" {
+  description = "Correo que recibe las alertas de CloudWatch (llega desde el secret ALERT_EMAIL)"
+  type        = string
 }

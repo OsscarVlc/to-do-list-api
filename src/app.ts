@@ -1,12 +1,28 @@
-// Rutas de la to-do list API
 import express, { Request, Response } from "express";
 import { getAllTasks, createTask } from "./tasksRepository";
+import { isDbHealthy } from "./db";
+import { recordTaskCreated } from "./metrics";
 
 const app = express();
 app.use(express.json());
 
+function getVersion(): string {
+  return process.env.APP_VERSION ?? "dev";
+}
+
 app.get("/version", (_req: Request, res: Response) => {
-  res.json({ version: process.env.APP_VERSION ?? "dev" });
+  res.json({ version: getVersion() });
+});
+
+app.get("/health", async (_req: Request, res: Response) => {
+  const dbUp = await isDbHealthy();
+
+  res.status(dbUp ? 200 : 503).json({
+    status: dbUp ? "ok" : "error",
+    database: dbUp ? "up" : "down",
+    version: getVersion(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.get("/tasks", async (_req: Request, res: Response) => {
@@ -29,6 +45,7 @@ app.post("/tasks", async (req: Request, res: Response) => {
 
   try {
     const task = await createTask(tarea.trim());
+    recordTaskCreated();
     res.status(201).json(task);
   } catch (error) {
     console.error("Error al crear tarea:", error);

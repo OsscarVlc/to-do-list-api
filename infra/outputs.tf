@@ -22,3 +22,13 @@ output "db_secret_name" {
   description = "Nombre del secreto con las credenciales de la BD"
   value       = aws_secretsmanager_secret.db.name
 }
+
+output "db_identifier" {
+  description = "Identificador de la instancia RDS (para detenerla en la prueba de la alarma)"
+  value       = aws_db_instance.db.identifier
+}
+
+output "dashboard_url" {
+  description = "Link directo al dashboard de CloudWatch"
+  value       = "https://${var.region}.console.aws.amazon.com/cloudwatch/home?region=${var.region}#dashboards:name=${aws_cloudwatch_dashboard.main.dashboard_name}"
+}
