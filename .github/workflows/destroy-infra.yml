@@ -1,0 +1,42 @@
+name: Destroy infra
+
+# Manual, y pide escribir "destroy" para evitar borrar todo por un clic accidental
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Escribe "destroy" para confirmar'
+        required: true
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+
+    # El job solo corre si escribiste exactamente "destroy"
+    if: ${{ github.event.inputs.confirm == 'destroy' }}
+
+    defaults:
+      run:
+        working-directory: infra
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Descargar el código del repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform y conectar con HCP Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform destroy
+        run: terraform destroy -auto-approve
