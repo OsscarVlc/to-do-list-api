@@ -4,6 +4,10 @@ import { getAllTasks, createTask } from "./tasksRepository";
 const app = express();
 app.use(express.json());
 
+app.get("/version", (_req: Request, res: Response) => {
+  res.json({ version: process.env.APP_VERSION ?? "dev" });
+});
+
 app.get("/tasks", async (_req: Request, res: Response) => {
   try {
     const tasks = await getAllTasks();
