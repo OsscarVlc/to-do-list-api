@@ -1,0 +1,27 @@
+name: Deploy app
+
+# Se dispara cuando se publica un release nuevo
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código (para tener scripts/deploy.sh)
+        uses: actions/checkout@v4
+
+      - name: Configurar la llave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Desplegar en la EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key ubuntu@${{ secrets.EC2_HOST }} \
+            "bash -s -- ${{ github.event.release.tag_name }} ${{ github.repository }}" \
+            < scripts/deploy.sh
