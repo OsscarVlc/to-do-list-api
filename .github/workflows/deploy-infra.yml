@@ -18,6 +18,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       AWS_REGION: us-east-1
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
 
     steps:
       - name: Descargar el código del repo
@@ -38,10 +39,15 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve
 
-      - name: Mostrar la IP de la EC2
+      - name: Mostrar la IP de la EC2 y el dashboard
         run: |
           IP=$(terraform output -raw server_public_ip)
+          DASHBOARD=$(terraform output -raw dashboard_url)
           echo "IP de la EC2: $IP"
           echo "### EC2 lista" >> $GITHUB_STEP_SUMMARY
           echo "IP pública: \`$IP\`" >> $GITHUB_STEP_SUMMARY
           echo "Guárdala en el secret \`EC2_HOST\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Dashboard: $DASHBOARD" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Confirma la suscripción de SNS en tu correo** para recibir las alarmas." >> $GITHUB_STEP_SUMMARY

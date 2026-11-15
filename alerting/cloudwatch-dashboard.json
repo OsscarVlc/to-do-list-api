@@ -1,0 +1,55 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "CPU de la EC2 (%) - nativa",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [["AWS/EC2", "CPUUtilization", "InstanceId", "${instance_id}"]],
+        "annotations": { "horizontal": [{ "label": "Umbral alarma", "value": 80 }] },
+        "yAxis": { "left": { "min": 0, "max": 100 } }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Errores de RDS (DbErrors)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Sum",
+        "period": 300,
+        "metrics": [["TodoApi", "DbErrors"]],
+        "annotations": { "horizontal": [{ "label": "Umbral alarma", "value": 1 }] },
+        "yAxis": { "left": { "min": 0 } }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Tareas creadas (TasksCreated)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Sum",
+        "period": 300,
+        "metrics": [["TodoApi", "TasksCreated"]],
+        "annotations": { "horizontal": [{ "label": "Umbral alarma", "value": 50 }] },
+        "yAxis": { "left": { "min": 0 } }
+      }
+    }
+  ]
+}

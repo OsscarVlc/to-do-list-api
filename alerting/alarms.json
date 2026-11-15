@@ -1,0 +1,41 @@
+[
+  {
+    "name": "todo-api-ec2-cpu-alta",
+    "description": "CPU promedio de la EC2 arriba de 80% durante 10 minutos seguidos",
+    "namespace": "AWS/EC2",
+    "metric_name": "CPUUtilization",
+    "dimensions": { "InstanceId": "EC2_INSTANCE_ID" },
+    "statistic": "Average",
+    "period": 300,
+    "evaluation_periods": 2,
+    "threshold": 80,
+    "comparison_operator": "GreaterThanThreshold",
+    "treat_missing_data": "missing"
+  },
+  {
+    "name": "todo-api-errores-rds",
+    "description": "Al menos 1 error al leer o escribir en RDS en 5 minutos",
+    "namespace": "TodoApi",
+    "metric_name": "DbErrors",
+    "dimensions": {},
+    "statistic": "Sum",
+    "period": 300,
+    "evaluation_periods": 1,
+    "threshold": 1,
+    "comparison_operator": "GreaterThanOrEqualToThreshold",
+    "treat_missing_data": "notBreaching"
+  },
+  {
+    "name": "todo-api-pico-de-tareas",
+    "description": "Mas de 50 tareas creadas en 5 minutos (posible bot o abuso)",
+    "namespace": "TodoApi",
+    "metric_name": "TasksCreated",
+    "dimensions": {},
+    "statistic": "Sum",
+    "period": 300,
+    "evaluation_periods": 1,
+    "threshold": 50,
+    "comparison_operator": "GreaterThanThreshold",
+    "treat_missing_data": "notBreaching"
+  }
+]

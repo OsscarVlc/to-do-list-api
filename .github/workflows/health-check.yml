@@ -1,0 +1,18 @@
+name: Health check
+
+on:
+  # Cada 5 minutos (hora UTC)
+  schedule:
+    - cron: "*/5 * * * *"
+  # También se puede correr a mano
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Consultar /health
+        run: |
+          curl -sS --fail-with-body --max-time 10 \
+            "http://${{ secrets.EC2_HOST }}:3000/health"
