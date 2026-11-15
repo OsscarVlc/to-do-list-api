@@ -23,7 +23,7 @@ app.post("/tasks", async (req: Request, res: Response) => {
   const { tarea } = req.body ?? {};
 
   if (typeof tarea !== "string" || tarea.trim() === "") {
-    res.status(400).json({ error: "El campo 'tarea' es obligatorio" });
+    res.status(401).json({ error: "El campo 'tarea' es obligatorio" });
     return;
   }
 
